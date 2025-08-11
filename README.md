@@ -24,5 +24,26 @@ This repository is configured with Git LFS to handle:
 
 ### Common Issues
 - If you get "file too large" errors, make sure Git LFS is installed and initialized
-- Build artifacts are automatically ignored - only source content will be tracked
+- Build artifacts are automatically ignored - only source content will be tracked  
 - Some RobustToolbox resources are ignored to prevent conflicts
+- If `git push` fails with authentication errors, make sure you have proper repository permissions
+- For very large repositories, use `git config http.postBuffer 524288000` to increase buffer size
+
+### Troubleshooting
+If you encounter issues:
+1. Make sure Git LFS is installed: `git lfs version`
+2. Initialize LFS in your repository: `git lfs install`  
+3. Check what files are tracked: `git lfs ls-files`
+4. For push issues, try: `git lfs push origin [branch-name]`
+
+### Using the Setup Script
+The easiest way to push your space-station-14 folder:
+```bash
+# Copy your space-station-14 folder to this repository directory
+cp -r /path/to/your/space-station-14 ./
+
+# Run the setup script
+./setup-ss14.sh
+
+# Follow the displayed instructions to commit and push
+```
