@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "license": "CC-BY-SA-3.0",
+  "size": "32x32",
+  "states": [
+    { "name": "base" },
+    { "name": "on" },
+    { "name": "off" }
+  ]
+}
