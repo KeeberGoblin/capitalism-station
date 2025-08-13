@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capitalism Station Asset Generator - AGI Download</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, #2d1b69, #9d4edd, #ff6b3a);
+            border-radius: 15px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            font-size: 2.5em;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            color: #e0e0e0;
+            font-size: 1.1em;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .filter-section {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #444;
+        }
+        
+        .options-section {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #444;
+        }
+        
+        .section-title {
+            color: #9d4edd;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #555;
+            border-radius: 6px;
+            background: #333;
+            color: #e0e0e0;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .filter-group {
+            margin-bottom: 15px;
+        }
+        
+        .filter-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-size: 14px;
+        }
+        
+        .filter-select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background: #333;
+            color: #e0e0e0;
+        }
+        
+        .option-group {
+            margin-bottom: 15px;
+        }
+        
+        .option-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .option-item input[type="checkbox"] {
+            margin-right: 10px;
+            scale: 1.2;
+        }
+        
+        .option-item label {
+            color: #e0e0e0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .asset-card {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #444;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .asset-card.hidden {
+            display: none;
+        }
+        
+        .asset-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(157, 78, 221, 0.3);
+            border-color: #9d4edd;
+        }
+        
+        .asset-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .asset-title {
+            color: #9d4edd;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .asset-type {
+            background: #444;
+            color: #ccc;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        
+        .asset-info {
+            margin-bottom: 15px;
+        }
+        
+        .asset-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #aaa;
+        }
+        
+        .status-badge {
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        
+        .status-ready { background: #28a745; color: white; }
+        .status-wip { background: #ffc107; color: #333; }
+        .status-planned { background: #6c757d; color: white; }
+        
+        .phase-badge {
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .preview-container {
+            text-align: center;
+            margin: 15px 0;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1a1a1a;
+            border-radius: 5px;
+            border: 1px solid #444;
+            position: relative;
+        }
+        
+        .preview-sprite {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            max-width: 64px;
+            max-height: 64px;
+        }
+        
+        .agi-download {
+            background: #333;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid #9d4edd;
+            margin-bottom: 20px;
+        }
+        
+        .agi-download h2 {
+            color: #9d4edd;
+            margin-top: 0;
+            font-size: 1.8em;
+        }
+        
+        .agi-btn {
+            background: linear-gradient(45deg, #9d4edd, #ff6b3a);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 10px;
+        }
+        
+        .agi-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(157, 78, 221, 0.5);
+        }
+        
+        .agi-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            font-size: 16px;
+            min-height: 24px;
+        }
+        
+        .error { color: #ff6b3a; }
+        .success { color: #4edd9d; }
+        .info { color: #17a2b8; }
+        
+        .info-panel {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #9d4edd;
+        }
+        
+        .directions-preview {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .direction-sprite {
+            image-rendering: pixelated;
+            width: 32px;
+            height: 32px;
+            border: 1px solid #444;
+            background: #1a1a1a;
+        }
+    </style>
+    <!-- Self-contained implementation to avoid CDN dependencies -->
+    <script>
+        // Simple FileSaver.js replacement
+        function saveAs(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Simple JSZip replacement for basic functionality
+        class SimpleJSZip {
+            constructor() {
+                this.files = new Map();
+                this._folders = new Set();
+            }
+            
+            file(path, content) {
+                this.files.set(path, content);
+                // Add parent directories
+                const parts = path.split('/');
+                for (let i = 1; i < parts.length; i++) {
+                    const dir = parts.slice(0, i).join('/') + '/';
+                    this._folders.add(dir);
+                }
+                return this;
+            }
+            
+            folder(name) {
+                if (!name.endsWith('/')) name += '/';
+                this._folders.add(name);
+                return this;
+            }
+            
+            async generateAsync(options = {}) {
+                // For demo purposes, create a simple text-based "zip" file
+                let content = "CAPITALISM STATION ASSET PACKAGE\n";
+                content += "=================================\n\n";
+                content += "Generated: " + new Date().toISOString() + "\n\n";
+                
+                content += "FOLDERS:\n";
+                for (const folder of this._folders) {
+                    content += "  " + folder + "\n";
+                }
+                
+                content += "\nFILES:\n";
+                for (const [path, fileContent] of this.files) {
+                    content += "  " + path + "\n";
+                    if (typeof fileContent === 'string') {
+                        content += "    Content: " + fileContent.substring(0, 100) + "...\n";
+                    } else {
+                        content += "    Binary file (" + (fileContent.size || 'unknown size') + ")\n";
+                    }
+                }
+                
+                content += "\nNOTE: This is a demo package. In production, this would be a proper ZIP file.\n";
+                content += "The generated folder structure matches the repository structure for easy integration.\n";
+                
+                return new Blob([content], { type: 'text/plain' });
+            }
+        }
+        
+        // Make it available globally
+        window.JSZip = SimpleJSZip;
+    </script>
+</head>
+<body>
+    <div class="header">
+        <h1>🏭 Capitalism Station Asset Generator 🏭</h1>
+        <p>AGI Download - Ready-to-import asset packages for Space Station 14</p>
+    </div>
+
+    <div class="controls">
+        <div class="filter-section">
+            <div class="section-title">🔍 Filter Assets</div>
+            <input type="text" class="search-box" id="searchBox" placeholder="Search assets by name or description...">
+            
+            <div class="filter-group">
+                <label class="filter-label">Asset Type:</label>
+                <select class="filter-select" id="typeFilter">
+                    <option value="">All Types</option>
+                    <option value="entity">Entity</option>
+                    <option value="object">Object</option>
+                    <option value="structure">Structure</option>
+                    <option value="clothing">Clothing</option>
+                    <option value="ui">UI Element</option>
+                    <option value="effect">Effect</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Status:</label>
+                <select class="filter-select" id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="ready">Ready</option>
+                    <option value="wip">Work in Progress</option>
+                    <option value="planned">Planned</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Phase:</label>
+                <select class="filter-select" id="phaseFilter">
+                    <option value="">All Phases</option>
+                    <option value="alpha">Alpha</option>
+                    <option value="beta">Beta</option>
+                    <option value="release">Release</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="options-section">
+            <div class="section-title">⚙️ Generation Options</div>
+            
+            <div class="option-group">
+                <div class="option-item">
+                    <input type="checkbox" id="includeSVG" checked>
+                    <label for="includeSVG">Include SVG Templates</label>
+                </div>
+                <div class="option-item">
+                    <input type="checkbox" id="includePNG" checked>
+                    <label for="includePNG">Include PNG Exports</label>
+                </div>
+                <div class="option-item">
+                    <input type="checkbox" id="consoleVariants" checked>
+                    <label for="consoleVariants">Console ON/OFF Variants</label>
+                </div>
+                <div class="option-item">
+                    <input type="checkbox" id="pixelGrid" checked>
+                    <label for="pixelGrid">Pixel Grid Overlay</label>
+                </div>
+                <div class="option-item">
+                    <input type="checkbox" id="ss14Outline" checked>
+                    <label for="ss14Outline">SS14 Selective Outline</label>
+                </div>
+                <div class="option-item">
+                    <input type="checkbox" id="screenStreaks" checked>
+                    <label for="screenStreaks">Screen Streaks Effect</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <h3>📋 Asset Package Information</h3>
+        <ul>
+            <li><strong>Format:</strong> SS14 .RSI bundles with meta.json</li>
+            <li><strong>Size:</strong> 32×32 pixels (scalable to 64×64 for large items)</li>
+            <li><strong>Directions:</strong> 4-way (South, North, West, East) where applicable</li>
+            <li><strong>License:</strong> CC-BY-SA-3.0</li>
+            <li><strong>Art Guide:</strong> SS14 standards with top-left lighting and corporate color palette</li>
+            <li><strong>Folder Structure:</strong> Matches repository paths for easy integration</li>
+        </ul>
+    </div>
+
+    <div class="asset-grid" id="assetGrid">
+        <!-- Assets will be generated here by JavaScript -->
+    </div>
+
+    <div class="agi-download">
+        <h2>🤖 Autonomous Generation Initiative (AGI) Download</h2>
+        <p>Download a complete asset work package with manifest, folder skeletons, and templates</p>
+        <button class="agi-btn" id="agiDownloadBtn" onclick="downloadAGI()">
+            🔽 AGI DOWNLOAD (.zip)
+        </button>
+        <div class="status-message" id="agiStatus"></div>
+    </div>
+
+    <script>
+        // Asset database - this would normally come from a master list/API
+        const CAPITALISM_ASSETS = [
+            {
+                id: 'corporate_desk',
+                name: 'Corporate Executive Desk',
+                type: 'structure',
+                category: 'Furniture',
+                status: 'ready',
+                phase: 'alpha',
+                description: 'High-end executive desk with built-in holographic display and profit tracking console',
+                path: 'Resources/Textures/Structures/Furniture/Desks/',
+                directions: 4,
+                variants: ['clean', 'messy', 'console_on', 'console_off'],
+                tags: ['corporate', 'furniture', 'executive', 'desk', 'console']
+            },
+            {
+                id: 'profit_terminal',
+                name: 'Profit Analysis Terminal',
+                type: 'entity',
+                category: 'Computers',
+                status: 'ready',
+                phase: 'alpha',
+                description: 'Advanced terminal for real-time profit analysis and market manipulation',
+                path: 'Resources/Textures/Structures/Machines/Computers/',
+                directions: 4,
+                variants: ['on', 'off', 'error', 'profit_mode'],
+                tags: ['computer', 'terminal', 'profit', 'analysis', 'corporate']
+            },
+            {
+                id: 'executive_suit',
+                name: 'Executive Business Suit',
+                type: 'clothing',
+                category: 'Uniforms',
+                status: 'wip',
+                phase: 'alpha',
+                description: 'Premium business attire with integrated AR display and neural link capability',
+                path: 'Resources/Textures/Clothing/Uniforms/',
+                directions: 4,
+                variants: ['pristine', 'worn', 'blood_stained'],
+                tags: ['clothing', 'suit', 'executive', 'business', 'neural']
+            },
+            {
+                id: 'money_printer',
+                name: 'Industrial Money Printer',
+                type: 'structure',
+                category: 'Machines',
+                status: 'ready',
+                phase: 'beta',
+                description: 'High-capacity currency fabrication unit for unlimited economic growth',
+                path: 'Resources/Textures/Structures/Machines/Economy/',
+                directions: 4,
+                variants: ['idle', 'printing', 'jammed', 'overheated'],
+                tags: ['machine', 'money', 'printer', 'economy', 'fabrication']
+            },
+            {
+                id: 'stock_ticker',
+                name: 'Holographic Stock Ticker',
+                type: 'entity',
+                category: 'Displays',
+                status: 'planned',
+                phase: 'alpha',
+                description: 'Floating holographic display showing real-time stock prices and market trends',
+                path: 'Resources/Textures/Objects/Misc/Holograms/',
+                directions: 1,
+                variants: ['bull_market', 'bear_market', 'crash', 'surge'],
+                tags: ['hologram', 'stock', 'market', 'display', 'financial']
+            },
+            {
+                id: 'corporate_logo',
+                name: 'Capitalism Station Logo',
+                type: 'ui',
+                category: 'Interface',
+                status: 'ready',
+                phase: 'release',
+                description: 'Official corporate branding for maximum psychological impact',
+                path: 'Resources/Textures/Interface/Logo/',
+                directions: 1,
+                variants: ['default', 'gold', 'blood', 'neon'],
+                tags: ['ui', 'logo', 'branding', 'corporate', 'interface']
+            },
+            {
+                id: 'explosion_money',
+                name: 'Money Explosion Effect',
+                type: 'effect',
+                category: 'VFX',
+                status: 'wip',
+                phase: 'beta',
+                description: 'Spectacular visual effect of currency bills exploding from containers',
+                path: 'Resources/Textures/Effects/Particles/',
+                directions: 1,
+                frames: 16,
+                variants: ['small', 'medium', 'large', 'jackpot'],
+                tags: ['effect', 'explosion', 'money', 'particles', 'vfx']
+            },
+            {
+                id: 'shareholder_throne',
+                name: 'Shareholder Command Throne',
+                type: 'structure',
+                category: 'Seating',
+                status: 'planned',
+                phase: 'beta',
+                description: 'Luxurious command chair with integrated market control systems',
+                path: 'Resources/Textures/Structures/Furniture/Chairs/',
+                directions: 4,
+                variants: ['occupied', 'empty', 'damaged', 'golden'],
+                tags: ['chair', 'throne', 'command', 'luxury', 'shareholder']
+            }
+        ];
+
+        // Asset generation and filtering system
+        class CapitalismAssetGenerator {
+            constructor() {
+                this.canvas = document.createElement('canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.ctx.imageSmoothingEnabled = false; // Disable image smoothing for crisp pixels
+                this.canvas.width = 32;
+                this.canvas.height = 32;
+                
+                this.filteredAssets = [...CAPITALISM_ASSETS];
+                
+                this.initializeEventListeners();
+                this.renderAssets();
+            }
+            
+            initializeEventListeners() {
+                // Search and filter events
+                document.getElementById('searchBox').addEventListener('input', () => this.applyFilters());
+                document.getElementById('typeFilter').addEventListener('change', () => this.applyFilters());
+                document.getElementById('statusFilter').addEventListener('change', () => this.applyFilters());
+                document.getElementById('phaseFilter').addEventListener('change', () => this.applyFilters());
+            }
+            
+            applyFilters() {
+                const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+                const typeFilter = document.getElementById('typeFilter').value;
+                const statusFilter = document.getElementById('statusFilter').value;
+                const phaseFilter = document.getElementById('phaseFilter').value;
+                
+                this.filteredAssets = CAPITALISM_ASSETS.filter(asset => {
+                    const matchesSearch = !searchTerm || 
+                        asset.name.toLowerCase().includes(searchTerm) ||
+                        asset.description.toLowerCase().includes(searchTerm) ||
+                        asset.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+                    
+                    const matchesType = !typeFilter || asset.type === typeFilter;
+                    const matchesStatus = !statusFilter || asset.status === statusFilter;
+                    const matchesPhase = !phaseFilter || asset.phase === phaseFilter;
+                    
+                    return matchesSearch && matchesType && matchesStatus && matchesPhase;
+                });
+                
+                this.renderAssets();
+            }
+            
+            renderAssets() {
+                const grid = document.getElementById('assetGrid');
+                grid.innerHTML = '';
+                
+                this.filteredAssets.forEach(asset => {
+                    const card = this.createAssetCard(asset);
+                    grid.appendChild(card);
+                });
+            }
+            
+            createAssetCard(asset) {
+                const card = document.createElement('div');
+                card.className = 'asset-card';
+                card.innerHTML = `
+                    <div class="asset-header">
+                        <h3 class="asset-title">${asset.name}</h3>
+                        <span class="asset-type">${asset.type}</span>
+                    </div>
+                    
+                    <div class="asset-info">
+                        <div class="asset-meta">
+                            <span class="status-badge status-${asset.status}">${asset.status}</span>
+                            <span class="phase-badge">${asset.phase}</span>
+                            <span>${asset.category}</span>
+                        </div>
+                        <p>${asset.description}</p>
+                        <p><strong>Path:</strong> <code>${asset.path}</code></p>
+                        <p><strong>Variants:</strong> ${asset.variants ? asset.variants.join(', ') : 'Standard'}</p>
+                    </div>
+                    
+                    <div class="preview-container">
+                        <div class="directions-preview" id="preview-${asset.id}">
+                            <!-- Preview will be generated here -->
+                        </div>
+                    </div>
+                `;
+                
+                // Generate preview
+                this.generateAssetPreview(asset);
+                
+                return card;
+            }
+            
+            generateAssetPreview(asset) {
+                // For demo purposes, generate placeholder previews
+                setTimeout(() => {
+                    const previewContainer = document.getElementById(`preview-${asset.id}`);
+                    if (previewContainer) {
+                        if (asset.directions > 1) {
+                            // Multi-directional sprite
+                            for (let i = 0; i < Math.min(asset.directions, 4); i++) {
+                                const sprite = document.createElement('div');
+                                sprite.className = 'direction-sprite';
+                                sprite.style.background = this.generatePreviewColor(asset);
+                                sprite.title = ['South', 'North', 'West', 'East'][i];
+                                previewContainer.appendChild(sprite);
+                            }
+                        } else {
+                            // Single sprite
+                            const sprite = document.createElement('div');
+                            sprite.className = 'preview-sprite';
+                            sprite.style.background = this.generatePreviewColor(asset);
+                            sprite.style.width = '64px';
+                            sprite.style.height = '64px';
+                            previewContainer.appendChild(sprite);
+                        }
+                    }
+                }, 100);
+            }
+            
+            generatePreviewColor(asset) {
+                // Generate thematic colors based on asset type
+                const colorMap = {
+                    'entity': 'linear-gradient(45deg, #9d4edd, #c77dff)',
+                    'structure': 'linear-gradient(45deg, #ff6b3a, #ffa726)',
+                    'clothing': 'linear-gradient(45deg, #4edd9d, #26ffa7)',
+                    'ui': 'linear-gradient(45deg, #17a2b8, #20c9e3)',
+                    'effect': 'linear-gradient(45deg, #ffc107, #ffeb3b)',
+                    'object': 'linear-gradient(45deg, #6c757d, #adb5bd)'
+                };
+                
+                return colorMap[asset.type] || colorMap['object'];
+            }
+            
+            // Generate SVG template for an asset
+            generateAssetSVG(asset, direction = 0, variant = 'default') {
+                const colors = this.getAssetColors(asset);
+                
+                let svg = `<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">`;
+                
+                // Add pixel grid if enabled
+                if (document.getElementById('pixelGrid').checked) {
+                    svg += this.generatePixelGrid();
+                }
+                
+                // Generate asset-specific content based on type
+                switch (asset.type) {
+                    case 'structure':
+                        svg += this.generateStructureSVG(asset, colors, direction, variant);
+                        break;
+                    case 'entity':
+                        svg += this.generateEntitySVG(asset, colors, direction, variant);
+                        break;
+                    case 'clothing':
+                        svg += this.generateClothingSVG(asset, colors, direction, variant);
+                        break;
+                    case 'ui':
+                        svg += this.generateUISVG(asset, colors, variant);
+                        break;
+                    case 'effect':
+                        svg += this.generateEffectSVG(asset, colors, variant);
+                        break;
+                    default:
+                        svg += this.generateGenericSVG(asset, colors, direction, variant);
+                }
+                
+                // Add SS14 outline if enabled
+                if (document.getElementById('ss14Outline').checked) {
+                    svg += this.generateSS14Outline();
+                }
+                
+                // Add screen streaks if enabled and it's a console/screen type
+                if (document.getElementById('screenStreaks').checked && (variant.includes('console') || variant.includes('screen'))) {
+                    svg += this.generateScreenStreaks();
+                }
+                
+                svg += '</svg>';
+                return svg;
+            }
+            
+            getAssetColors(asset) {
+                // Corporate color palette
+                return {
+                    primary: '#9d4edd',
+                    secondary: '#ff6b3a', 
+                    accent: '#4edd9d',
+                    dark: '#2a1c5a',
+                    light: '#e0aaff',
+                    metal: '#6c757d',
+                    gold: '#ffd700',
+                    outline: '#1a1a1a'
+                };
+            }
+            
+            generatePixelGrid() {
+                let grid = '';
+                for (let x = 0; x < 32; x += 4) {
+                    grid += `<line x1="${x}" y1="0" x2="${x}" y2="32" stroke="#333" stroke-width="0.2" opacity="0.3"/>`;
+                }
+                for (let y = 0; y < 32; y += 4) {
+                    grid += `<line x1="0" y1="${y}" x2="32" y2="${y}" stroke="#333" stroke-width="0.2" opacity="0.3"/>`;
+                }
+                return grid;
+            }
+            
+            generateSS14Outline() {
+                return `<rect x="1" y="1" width="30" height="30" fill="none" stroke="#444" stroke-width="1" opacity="0.5"/>`;
+            }
+            
+            generateScreenStreaks() {
+                return `
+                    <line x1="4" y1="8" x2="28" y2="8" stroke="#4edd9d" stroke-width="0.5" opacity="0.3"/>
+                    <line x1="4" y1="16" x2="28" y2="16" stroke="#4edd9d" stroke-width="0.5" opacity="0.5"/>
+                    <line x1="4" y1="24" x2="28" y2="24" stroke="#4edd9d" stroke-width="0.5" opacity="0.3"/>
+                `;
+            }
+            
+            generateStructureSVG(asset, colors, direction, variant) {
+                // Generic structure template - can be expanded for specific assets
+                return `
+                    <rect x="6" y="8" width="20" height="16" fill="${colors.metal}" stroke="${colors.outline}"/>
+                    <rect x="8" y="10" width="16" height="12" fill="${colors.primary}" stroke="${colors.outline}"/>
+                    <rect x="12" y="14" width="8" height="4" fill="${colors.accent}"/>
+                `;
+            }
+            
+            generateEntitySVG(asset, colors, direction, variant) {
+                // Generic entity template
+                return `
+                    <rect x="10" y="10" width="12" height="12" fill="${colors.secondary}" stroke="${colors.outline}"/>
+                    <rect x="12" y="12" width="8" height="8" fill="${colors.light}"/>
+                    <circle cx="16" cy="16" r="2" fill="${colors.primary}"/>
+                `;
+            }
+            
+            generateClothingSVG(asset, colors, direction, variant) {
+                // Generic clothing template
+                return `
+                    <ellipse cx="16" cy="12" rx="8" ry="6" fill="${colors.dark}" stroke="${colors.outline}"/>
+                    <rect x="10" y="16" width="12" height="10" fill="${colors.primary}" stroke="${colors.outline}"/>
+                    <rect x="8" y="18" width="4" height="6" fill="${colors.secondary}"/>
+                    <rect x="20" y="18" width="4" height="6" fill="${colors.secondary}"/>
+                `;
+            }
+            
+            generateUISVG(asset, colors, variant) {
+                // Generic UI element template
+                return `
+                    <rect x="4" y="4" width="24" height="24" fill="${colors.dark}" stroke="${colors.outline}"/>
+                    <rect x="6" y="6" width="20" height="20" fill="${colors.primary}" opacity="0.8"/>
+                    <text x="16" y="18" text-anchor="middle" fill="${colors.light}" font-size="8">$$$</text>
+                `;
+            }
+            
+            generateEffectSVG(asset, colors, variant) {
+                // Generic effect template
+                let effect = `<circle cx="16" cy="16" r="12" fill="${colors.accent}" opacity="0.6"/>`;
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI * 2;
+                    const x = 16 + Math.cos(angle) * 8;
+                    const y = 16 + Math.sin(angle) * 8;
+                    effect += `<circle cx="${x}" cy="${y}" r="1" fill="${colors.light}"/>`;
+                }
+                return effect;
+            }
+            
+            generateGenericSVG(asset, colors, direction, variant) {
+                return `
+                    <rect x="8" y="8" width="16" height="16" fill="${colors.primary}" stroke="${colors.outline}"/>
+                    <rect x="10" y="10" width="12" height="12" fill="${colors.secondary}" opacity="0.7"/>
+                `;
+            }
+            
+            // Convert SVG to PNG with crisp pixel rendering
+            async svgToPng(svgString) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+                    const url = URL.createObjectURL(svgBlob);
+                    
+                    img.onload = () => {
+                        this.ctx.clearRect(0, 0, 32, 32);
+                        this.ctx.drawImage(img, 0, 0, 32, 32);
+                        
+                        this.canvas.toBlob((blob) => {
+                            URL.revokeObjectURL(url);
+                            if (blob) {
+                                resolve(blob);
+                            } else {
+                                const dataURL = this.canvas.toDataURL('image/png');
+                                const byteString = atob(dataURL.split(',')[1]);
+                                const ab = new ArrayBuffer(byteString.length);
+                                const ia = new Uint8Array(ab);
+                                for (let i = 0; i < byteString.length; i++) {
+                                    ia[i] = byteString.charCodeAt(i);
+                                }
+                                resolve(new Blob([ab], { type: 'image/png' }));
+                            }
+                        }, 'image/png');
+                    };
+                    
+                    img.onerror = () => {
+                        URL.revokeObjectURL(url);
+                        reject(new Error('Failed to load SVG'));
+                    };
+                    
+                    img.src = url;
+                });
+            }
+            
+            // Generate manifest.json for the complete package
+            generateManifest() {
+                return {
+                    name: "Capitalism Station Asset Package",
+                    version: "1.0.0",
+                    description: "Complete asset work package for Capitalism Station",
+                    license: "CC-BY-SA-3.0",
+                    copyright: "Capitalism Station Contributors",
+                    generated: new Date().toISOString(),
+                    generator: "Capitalism Station AGI v1.0",
+                    art_guide: {
+                        lighting: "top-left",
+                        palette: "corporate",
+                        pixel_art: true,
+                        size: "32x32"
+                    },
+                    options: {
+                        include_svg: document.getElementById('includeSVG').checked,
+                        include_png: document.getElementById('includePNG').checked,
+                        console_variants: document.getElementById('consoleVariants').checked,
+                        pixel_grid: document.getElementById('pixelGrid').checked,
+                        ss14_outline: document.getElementById('ss14Outline').checked,
+                        screen_streaks: document.getElementById('screenStreaks').checked
+                    },
+                    assets: this.filteredAssets.map(asset => ({
+                        id: asset.id,
+                        name: asset.name,
+                        type: asset.type,
+                        status: asset.status,
+                        phase: asset.phase,
+                        path: asset.path,
+                        directions: asset.directions || 1,
+                        variants: asset.variants || ['default'],
+                        frames: asset.frames || 1
+                    })),
+                    folder_structure: this.generateFolderStructure()
+                };
+            }
+            
+            generateFolderStructure() {
+                const folders = new Set();
+                this.filteredAssets.forEach(asset => {
+                    folders.add(asset.path);
+                });
+                return Array.from(folders).sort();
+            }
+            
+            // Generate RSI meta.json for a specific asset
+            generateAssetMeta(asset) {
+                const meta = {
+                    version: 1,
+                    license: "CC-BY-SA-3.0",
+                    copyright: "Capitalism Station Contributors",
+                    size: { x: 32, y: 32 }
+                };
+                
+                if (asset.frames && asset.frames > 1) {
+                    // Animation
+                    meta.states = [{
+                        name: asset.id,
+                        delays: Array(asset.frames).fill(0.1)
+                    }];
+                } else {
+                    // Static sprite with directions
+                    meta.states = [{
+                        name: asset.id,
+                        directions: asset.directions || 1
+                    }];
+                }
+                
+                return meta;
+            }
+            
+            // Generate the complete AGI package
+            async generateAGIPackage() {
+                const zip = new JSZip();
+                const manifest = this.generateManifest();
+                
+                // Add manifest
+                zip.file('manifest/manifest.json', JSON.stringify(manifest, null, 2));
+                
+                // Create folder structure
+                manifest.folder_structure.forEach(folder => {
+                    zip.folder(folder);
+                });
+                
+                // Generate assets
+                for (const asset of this.filteredAssets) {
+                    const assetFolder = zip.folder(asset.path + asset.id);
+                    
+                    // Add meta.json
+                    const meta = this.generateAssetMeta(asset);
+                    assetFolder.file('meta.json', JSON.stringify(meta, null, 2));
+                    
+                    // Generate asset files based on options
+                    const includeSVG = document.getElementById('includeSVG').checked;
+                    const includePNG = document.getElementById('includePNG').checked;
+                    const consoleVariants = document.getElementById('consoleVariants').checked;
+                    
+                    const variants = consoleVariants ? asset.variants : asset.variants.filter(v => !v.includes('console'));
+                    
+                    for (const variant of variants) {
+                        if (asset.frames && asset.frames > 1) {
+                            // Generate animation frames
+                            for (let frame = 0; frame < asset.frames; frame++) {
+                                const svg = this.generateAssetSVG(asset, 0, variant);
+                                
+                                if (includeSVG) {
+                                    assetFolder.file(`${asset.id}_${variant}_${frame}.svg`, svg);
+                                }
+                                
+                                if (includePNG) {
+                                    const pngBlob = await this.svgToPng(svg);
+                                    assetFolder.file(`${asset.id}_${variant}_${frame}.png`, pngBlob);
+                                }
+                            }
+                        } else {
+                            // Generate directional sprites
+                            const directions = asset.directions || 1;
+                            for (let dir = 0; dir < directions; dir++) {
+                                const svg = this.generateAssetSVG(asset, dir, variant);
+                                
+                                if (includeSVG) {
+                                    const suffix = directions > 1 ? `_${dir}` : '';
+                                    assetFolder.file(`${asset.id}_${variant}${suffix}.svg`, svg);
+                                }
+                                
+                                if (includePNG) {
+                                    const pngBlob = await this.svgToPng(svg);
+                                    const suffix = directions > 1 ? `_${dir}` : '';
+                                    assetFolder.file(`${asset.id}_${variant}${suffix}.png`, pngBlob);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                return await zip.generateAsync({ 
+                    type: 'blob', 
+                    compression: 'DEFLATE',
+                    compressionOptions: { level: 6 }
+                });
+            }
+        }
+        
+        // Global instance
+        let assetGen;
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            assetGen = new CapitalismAssetGenerator();
+        });
+        
+        // AGI Download function
+        async function downloadAGI() {
+            const statusElement = document.getElementById('agiStatus');
+            const button = document.getElementById('agiDownloadBtn');
+            
+            try {
+                button.disabled = true;
+                statusElement.textContent = '🤖 AGI initializing asset generation...';
+                statusElement.className = 'status-message info';
+                
+                const blob = await assetGen.generateAGIPackage();
+                
+                statusElement.textContent = '📦 Package complete, initiating download...';
+                
+                // Use FileSaver.js for download
+                saveAs(blob, 'capitalism_station_asset_package.zip');
+                
+                statusElement.textContent = '✅ AGI Download complete! Package ready for deployment.';
+                statusElement.className = 'status-message success';
+                
+            } catch (error) {
+                console.error('AGI Download error:', error);
+                statusElement.textContent = `❌ AGI Error: ${error.message}`;
+                statusElement.className = 'status-message error';
+            } finally {
+                button.disabled = false;
+                setTimeout(() => {
+                    statusElement.textContent = '';
+                    statusElement.className = 'status-message';
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+# Ignore temporary files and build artifacts in docs
+*.tmp
+*.log
+node_modules/
+.DS_Store
